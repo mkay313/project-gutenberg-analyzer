@@ -6,6 +6,8 @@ shinyUI(fluidPage(
 
   # Application title
   titlePanel("Project Gutenberg books analyzer"),
+  p("How many different words appear in a book? Can you measure the book difficulty by calculating how many unique words appear in it?
+    Search for a volume from the Project Gutenberg to display graphs and statistical info."),
 
   # Sidebar with the upload panel
   sidebarLayout(
