@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyjs)
 library(plotly)
 
 shinyUI(fluidPage(
@@ -9,11 +10,12 @@ shinyUI(fluidPage(
   # Sidebar with the upload panel
   sidebarLayout(
     sidebarPanel(
-      textInput("book_title", label = h3("Title")),
-      textInput("book_author", label = h3("Author's surname")),
-      numericInput("percentage", label = h3("Choose percentage"), min=1, max=99, value = 20),
+      useShinyjs(),
+      textInput("book_title", label = h3("Book title"), value="Christmas Carol"),
+      textInput("book_author", label = h3("Author"), value="Dickens"),
+      actionButton("action", label = "Search!"),
       hr(),
-      actionButton("action", label = "Search")
+      uiOutput("coverage_slider")
     ),
 
     # Show a plot of the generated distribution

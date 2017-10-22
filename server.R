@@ -1,41 +1,73 @@
 library(shiny)
+library(shinyjs)
 library(ggplot2)
 library(plotly)
 
 shinyServer(function(input, output) {
   
-  terms <- reactive({
+  reactive_parse_book <- reactive({
     req(input$action)
     isolate({
       withProgress({
-        setProgress(message= "Processing...")
-        result <- parse.book(input$book_title, input$book_author, input$percentage)
+        setProgress(message = "Processing...")
+        result <- parse_book(input$book_title, input$book_author)
         validate(
-          need(result != "no results", "Book not found. Please look for something else."),
-          need(result != "several results", "More than one book found. Please provide more info.")
+          need(
+            result != "no results",
+            "Book not found. Please look for something else."
+          ),
+          need(
+            result != "several results",
+            "More than one book found. Please provide more info."
           )
+        )
         return(result)
       })
     })
   })
   
+  observeEvent(input$action, {
+    show("coverage_slider")
+  })
+  
+  #serving the slider on the server side to be able to change max depending on the book length
+  output$coverage_slider <- renderUI({
+    max_pages <- reactive_parse_book()[[2]]$pages
+    sliderInput(
+      inputId = "coverage",
+      label = "Which pages of the book you'd like to read?",
+      min = 1,
+      max = max_pages,
+      value = c(1,20),
+      step = 5
+    )
+  })
+  
+  reactive_calculate_words <- reactive({
+    req(input$coverage)
+    calculate_words(reactive_parse_book()[[1]], input$coverage[1], input$coverage[2])
+  })
+  
   #plot
   output$distPlot <- renderPlotly({
-    v <- terms()
-    ggplotly(ggplot(data=v[[1]], 
-           aes(x=Pages, y=Uniques)) + xlab("# of pages") + ylab("# of new unique words") + geom_point() + geom_smooth(model=lm))
+    ggplotly(
+      ggplot(data = reactive_calculate_words(),
+             aes(x = Pages, y = Uniques)) +
+        xlab("# of pages") +
+        ylab("# of new unique words") +
+        geom_point() +
+        geom_smooth(model = lm)
+    )
   })
   
   #text statistics under the plot
-  output$textStats <- renderText({ 
-    v <- terms()
-    sprintf("After reading %s percent (%s pages) of the book you will have encountered %s out of %s unique words, 
-            which is %s percent of total %s different words.
-            The Average Readability Grade of %s by %s is %s.",
-            input$percentage,
-            v[[2]][['pages_at_percentage']], v[[2]]['unique_words_at_percentage'], 
-            v[[2]]['total_unique_words'], v[[2]]['ratio'], 
-            v[[2]]['number_of_different_words'], v[[2]][,'title'],
-            v[[2]][,'author'],v[[2]]['readability'])
-    })
+  output$textStats <- renderText({
+    stats_frame <- reactive_parse_book()[[2]]
+    sprintf(
+      "%s by %s consists of %s words over %s pages. There are %s different words, of which %s appear only once.",
+      stats_frame$title, stats_frame$author,
+      stats_frame$words, stats_frame$pages,
+      stats_frame$different_words, stats_frame$unique_words
+    )
+  })
 })
