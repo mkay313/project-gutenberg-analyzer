@@ -1,7 +1,6 @@
 library(dplyr) #filter
 library(tm) #text manipulation
 library(magrittr) #piping
-library(readability) #readability score
 library(gutenbergr) #project gutenberg api
 
 
