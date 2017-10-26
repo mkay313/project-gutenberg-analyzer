@@ -5,6 +5,6 @@ This app is available via <a href="https://mzgw.shinyapps.io/gutenberg-book-anal
 
 To use locally:
 
-1. install the required packages using `install.packages(c("shiny", "shinyjs", dplyr", "tm", "magrittr", "gutenbergr", "plotly", "ggplot2"))`
+1. install the required packages using `install.packages(c("shiny", "shinyjs", dplyr", "tm", "magrittr", "gutenbergr", "plotly", "ggplot2, ggthemes"))`
 
 2. run the app, voila!
