@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyjs)
 library(ggplot2)
+library(ggthemes)
 library(plotly)
 
 shinyServer(function(input, output) {
@@ -56,7 +57,8 @@ shinyServer(function(input, output) {
         xlab("# of pages") +
         ylab("# of new unique words") +
         geom_point() +
-        geom_smooth(model = lm)
+        geom_smooth(method = "auto") +
+        theme_few()
     )
   })
   
