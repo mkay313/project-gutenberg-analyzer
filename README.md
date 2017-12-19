@@ -1,5 +1,5 @@
 # project-gutenberg-analyzer
-A Shiny app that uses the Project Gutenberg API to download books and generate book stats.
+A Shiny app that uses the Project Gutenberg API to generate book stats.
 
 This app is available via <a href="https://mzgw.shinyapps.io/gutenberg-book-analyzer/"> shiny apps</a>.
 
