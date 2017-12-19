@@ -1,6 +1,5 @@
-library(dplyr) #filter
+library(tidyverse)
 library(tm) #text manipulation
-library(magrittr) #piping
 library(gutenbergr) #project gutenberg api
 
 
@@ -68,15 +67,15 @@ parse_book <- function(book_title = "",
   #save the number of different words
   number_of_different_words <- nrow(data.frame(table(text)))
   
-  total_unique_recurring_df <- data.frame()
+  total_unique_recurring_df <- setNames(data.frame(matrix(ncol = 2, nrow = 0)), c("uniques", "recurring"))
+  
   for (i in 1:total_number_of_pages) {
     #parse an increasing number of pages and put those words into a list
     words <- table(text[1:(i * 250)])
     
     #change the table into a data frame and add column names
     temporary_df <- data.frame(words)
-    colnames(temporary_df)[1] <- "Words"
-    colnames(temporary_df)[2] <- "Freq"
+    colnames(temporary_df) <- c("Words", "Freq")
 
     #filter out empty spaces
     temporary_df <- filter(temporary_df, Words != " ")
@@ -90,8 +89,8 @@ parse_book <- function(book_title = "",
       data.frame(uniques = unique_temporary, recurring = recurring_temporary)
     
     #attach it to the main frame
-    total_unique_recurring_df <-
-      rbind(total_unique_recurring_df, temporary_df)
+    total_unique_recurring_df[i, ] <- temporary_df
+
   }
   
   stats <-
